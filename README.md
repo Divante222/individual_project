@@ -18,7 +18,7 @@ Coming soon
 
 - Data was acquired from: https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset
 
-- Clone the repo and run through the final report.
+- Clone this repo and run through the final report.
 
 # Project Plan
 
@@ -72,6 +72,7 @@ Coming soon
 - People who have had heart attack and people who didn't have heart attacks have a similar bmi mean
 
 ### Initial Questions/Thoughts
+- Will the every feature model beat out the next steps model of creating new feature columns
 
 # Modeling
 
