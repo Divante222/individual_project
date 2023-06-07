@@ -184,7 +184,7 @@ def create_random_forest(X_train,y_train, X_validate, y_validate,X_test, y_test)
     forest = RandomForestClassifier(random_state = 123,max_depth=4 )
     forest.fit(X_train, y_train)  
     test_predict = forest.score(X_test, y_test)
-    test_df.loc[1] = ['RandomForestClassifier', round(test_predict, 3), 4]
+    test_df.loc[1] = ['RandomForestClassifier', round(test_predict, 3), 16]
     
     return the_df, test_df
 

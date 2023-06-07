@@ -12,7 +12,18 @@ I believe that a majority of the feature columns will be good predictors of hear
 
 # Data Dictionary
 
-Coming soon
+| bmi                  | Body Mass Index                                                                                                   |
+|----------------------|-------------------------------------------------------------------------------------------------------------------|
+| smoker               | If the respondent has smoked 100 cigarettes in their lives                                                        |
+| menthlth             | Number of days during the past 30 days where mental health was not good                                           |
+| physhlth             | Number of days during the past 30 days where physical health was not good                                         |
+| sex                  | Sex of respondent                                                                                                 |
+| age                  | Age of respondent                                                                                                 |
+| heartdiseaseorattack | Respondents that have ever reported having coronary heart disease or attack                                       |
+| highbp               | Adults who have been told they have high blood pressure by a doctor, nurse, or other health professional          |
+| highchol             | Adults who have been told they have high cholesterol by a doctor, nurse, or other health professional             |
+| diabetes             | If respondent has diabetes or not                                                                                 |
+| hvyalcoholconsump    | Heavy drinkers (adult men having more than 14 drinks per week and adult women having more than 7 drinks per week) |
 
 # Steps to Reproduce
 
