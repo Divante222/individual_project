@@ -374,18 +374,36 @@ def multivariate_exploration_charts(df, the_list, second_list):
             plt.subplot(7,3,i+1)
             sns.barplot(data=df, x=col, y=second, hue=df.heartdiseaseorattack).set_title(f'{col}')
             i +=1
+    
     plt.tight_layout()
     plt.show()
 
 
 def bivariate_catagorical(df, the_list):
+    label_mapping_1 = {0: 'No High Blood Pressure', 1: 'High Blood Pressure'}
+    label_mapping_2 = {0: 'Normal Cholesterol', 1: 'High Cholesterol'}
+    label_mapping_3 = {0: 'Non-Smoking', 1: 'Smoking'}
+    label_mapping_4 = {0: 'No Diabetes', 1: 'Pre-Diabetes', 2:'Diabetes'}
+    label_mapping_5 = {0: 'No hvyalcoholconsump', 1: 'hvyalcoholconsump'}
+    
+
+    df['highchol'] = df['highchol'].map(label_mapping_1)
+    df['highbp'] = df['highbp'].map(label_mapping_2)
+    df['smoker'] = df['smoker'].map(label_mapping_3)
+    df['diabetes'] = df['diabetes'].map(label_mapping_4)
+    df['hvyalcoholconsump'] = df['hvyalcoholconsump'].map(label_mapping_5)
+    
+
+
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     for i, col in enumerate(the_list):
         plt.subplot(4,3,i+1)
         sns.countplot(hue=df['heartdiseaseorattack'], x=df[col], data=df).set_title(f'{col}')
+        if col in ['highbp', 'highchol', 'hvyalcoholconsump']:
+            plt.xticks(rotation = 10)
 
-    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.subplots_adjust(wspace=0.5, hspace=0.75)
     plt.show()
 
 def age_visual(df, the_age):
