@@ -57,7 +57,7 @@ Coming soon
     - Summarize
 
 ### Exploration Summary
-> - All of the features were statistically significant towards heard disease or attack
+- All of the features were statistically significant towards heard disease or attack
 
 - More people with high blood pressure had heart disease or a heart attack than those that did not
 - More people with high cholestreol had heart disease or a heart attack than those that did not
