@@ -181,10 +181,10 @@ def create_random_forest(X_train,y_train, X_validate, y_validate,X_test, y_test)
         validate_predict = forest.score(X_validate, y_validate)
         the_df.loc[i + 1] = ['RandomForestClassifier', train_predict, validate_predict, i + 1]
 
-    forest = RandomForestClassifier(random_state = 123,max_depth=4 )
+    forest = RandomForestClassifier(random_state = 123,max_depth=9 )
     forest.fit(X_train, y_train)  
     test_predict = forest.score(X_test, y_test)
-    test_df.loc[1] = ['RandomForestClassifier', round(test_predict, 3), 16]
+    test_df.loc[1] = ['RandomForestClassifier', round(test_predict, 3), 9]
     
     return the_df, test_df
 
@@ -300,7 +300,7 @@ def combine_three_dataframes(df1, df2, df3):
 def combine_two_dataframes(df1, df2):
     return pd.concat([df1, df2])
 
-def the_order():
+def the_order_list():
     the_order = ['18 to 24', '25 to 29', '30 to 34','35 to 39', '40 to 44',
             '45 to 49', '50 to 54', '55 to 59', '60 to 64', '65 to 69', 
             '70 to 74', '75 to 79', '80 or older']
@@ -320,4 +320,113 @@ def comparison_of_means(df, second_list):
     return df1
 
 
+def extra_analysis(df):
+    df1 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 0].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 0].value_counts()[1])
+    df1 = df1.rename(index={0: 'No diabetes'})
+    df2 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 1].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 1].value_counts()[1])
+    df2 = df2.rename(index={0: 'Pre diabetes'})
+    df3 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 2].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 2].value_counts()[1])
+    df3 = df3.rename(index={0: 'Has diabetes'})
+    diabetes_df = combine_three_dataframes(df1, df2, df3)
 
+
+    df1 = calculate_percentage(df.heartdiseaseorattack[df.hvyalcoholconsump == 0].value_counts()[0], df.heartdiseaseorattack[df.hvyalcoholconsump == 0].value_counts()[1])
+    df1 = df1.rename(index={0: 'Alcohol free'})
+    df2 = calculate_percentage(df.heartdiseaseorattack[df.hvyalcoholconsump == 1].value_counts()[0], df.heartdiseaseorattack[df.hvyalcoholconsump == 1].value_counts()[1])
+    df2 = df2.rename(index={0: 'Heavy alcohol'})
+    alcohol_df = combine_two_dataframes(df1, df2)
+
+    df1 = calculate_percentage(df.heartdiseaseorattack[df.sex == 'male'].value_counts()[0], df.heartdiseaseorattack[df.sex == 'male'].value_counts()[1])
+    df1 = df1.rename(index={0: 'Male'})
+    df2 = calculate_percentage(df.heartdiseaseorattack[df.sex == 'female'].value_counts()[0], df.heartdiseaseorattack[df.sex == 'female'].value_counts()[1])
+    df2 = df2.rename(index={0: 'Female'})
+    gender_df = combine_two_dataframes(df1, df2)
+
+
+    the_df = combine_three_dataframes(diabetes_df, alcohol_df, gender_df)
+    return the_df
+
+
+def load_all_csv():
+    knn_df = pd.read_csv('KNN.csv', index_col=0)
+    LR_df = pd.read_csv('LR.csv',index_col=0)
+    RF_df = pd.read_csv('RF.csv',index_col=0)
+    DT_df = pd.read_csv('DT.csv',index_col=0)
+    testRF = pd.read_csv('testRF.csv',index_col=0)
+
+    knn_df.iloc[1:2]
+    LR_df.iloc[1:2]
+    RF_df.iloc[9:10]
+    DT_df.iloc[1:2]
+    the_df = pd.concat([knn_df.iloc[1:2], LR_df.iloc[1:2], RF_df.iloc[9:10], DT_df.iloc[1:2]])
+    return the_df, testRF
+
+def multivariate_exploration_charts(df, the_list, second_list):
+    plt.figure(figsize=(14,14))
+    plt.xticks(rotation = 45)
+    i = 0
+
+    the_list # catagorical
+    second_list # continuous
+
+    for col in the_list:
+        for second in second_list: 
+            plt.subplot(7,3,i+1)
+            sns.barplot(data=df, x=col, y=second, hue=df.heartdiseaseorattack).set_title(f'{col}')
+            i +=1
+    plt.tight_layout()
+    plt.show()
+
+
+def bivariate_catagorical(df, the_list):
+    plt.figure(figsize=(14,14))
+    plt.xticks(rotation = 45)
+    for i, col in enumerate(the_list):
+        plt.subplot(4,3,i+1)
+        sns.countplot(hue=df['heartdiseaseorattack'], x=df[col], data=df).set_title(f'{col}')
+
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.show()
+
+def age_visual(df, the_age):
+    the_order = the_order_list()
+    sns.countplot(hue=df['heartdiseaseorattack'], x=df['age'], data=df, order = the_order).set_title(f'{the_age}')
+    plt.xticks(rotation=45)
+    plt.show()
+
+
+def bivariate_continuous(df, second_list):
+    plt.figure(figsize=(14,14))
+    plt.xticks(rotation = 45)
+    for i, col in enumerate(second_list):
+        plt.subplot(4,3,i+1)
+        sns.violinplot(x=df['heartdiseaseorattack'], y=df[col], data=df).set_title(f'{col}')
+        mean_value = np.mean(df[col][df['heartdiseaseorattack'] == 1])
+        mean_value_2 = np.mean(df[col][df['heartdiseaseorattack'] == 0])
+        plt.axhline(mean_value, color='red', linestyle='--', label='Mean heart attack')
+        plt.axhline(mean_value_2, color='blue', linestyle='--', label='Mean NoN heart attack')
+        plt.legend()
+        
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.show()
+
+
+def univariate_visual(df):
+    plt.figure(figsize=(14,14))
+    plt.xticks(rotation = 45)
+    for i, col in enumerate(df):
+        plt.subplot(4,3,i+1)
+    
+        sns.histplot(df[col])
+        plt.xticks(rotation=45)
+        
+    plt.tight_layout()
+    plt.show()
+
+
+def condenced_prepate(df):
+    df = prepare_data(df)
+    second_list, the_age, the_list, target = get_second_list(df)
+    train, validate, test = split_data(df, 'heartdiseaseorattack')
+    train_scaled, validate_scaled, test_scaled = scale_data(train, validate, test, cols = second_list)
+    return df, second_list, the_age, the_list, target, train, validate, test , train_scaled, validate_scaled, test_scaled
