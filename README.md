@@ -16,8 +16,9 @@ Coming soon
 
 # Steps to Reproduce
 
-Data was acquired from: https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset
-Clone the repo and run through the final report.
+- Data was acquired from: https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset
+
+- Clone the repo and run through the final report.
 
 # Project Plan
 
@@ -58,17 +59,17 @@ Clone the repo and run through the final report.
 ### Exploration Summary
 > - All of the features were statistically significant towards heard disease or attack
 
-> - More people with high blood pressure had heart disease or a heart attack than those that did not
-> - More people with high cholestreol had heart disease or a heart attack than those that did not
-> - More people that smoked had heart disease or a heart attack than those that did not
-> - People without diabeties had heart attacks 8.6% more than those that did have diabetes
-> - You are 5% more likely to have a heart attack if you are a female
-> - People who consumed heavy amounts of alcohol had heart disease or heart attacks 6.81% more than those that did not consume heavy amounts of alcohol
+- More people with high blood pressure had heart disease or a heart attack than those that did not
+- More people with high cholestreol had heart disease or a heart attack than those that did not
+- More people that smoked had heart disease or a heart attack than those that did not
+- People without diabeties had heart attacks 8.6% more than those that did have diabetes
+- You are 5% more likely to have a heart attack if you are a female
+- People who consumed heavy amounts of alcohol had heart disease or heart attacks 6.81% more than those that did not consume heavy amounts of alcohol
 
-> - People in higher age brackets have a higher percentage of people who have had a heart disease or attack
-> - People who have had heart attacks had more days of bad physical health
-> - People who have had heart attacks had more days of bad mental health
-> - People who have had heart attack and people who didn't have heart attacks have a similar bmi mean
+- People in higher age brackets have a higher percentage of people who have had a heart disease or attack
+- People who have had heart attacks had more days of bad physical health
+- People who have had heart attacks had more days of bad mental health
+- People who have had heart attack and people who didn't have heart attacks have a similar bmi mean
 
 ### Initial Questions/Thoughts
 
@@ -82,7 +83,7 @@ Clone the repo and run through the final report.
 - Pick best model and evaluate on test
 
 # Conclusion
-> * My top model performed beat baseline by .02 %
+* My top model performed beat baseline by .02 %
 
 # Recommendations
-> * I would not recommend using the model because it did not beat baseline by a significant result
+* I would not recommend using the model because it did not beat baseline by a significant result
