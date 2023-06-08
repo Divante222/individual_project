@@ -40,8 +40,6 @@ def split_data(df, target):
     '''
     Takes in a dataframe and returns train, validate, test subset dataframes
     '''
-    
-    
     train, test = train_test_split(df,
                                    test_size=.2, 
                                    random_state=123, 
@@ -57,6 +55,9 @@ def split_data(df, target):
 
 
 def prepare_data(df):
+    '''
+    Prepares the data to be used in later functions
+    '''
     df = df.drop(columns = ['CholCheck', 'PhysActivity', 'AnyHealthcare', 'NoDocbcCost','DiffWalk','GenHlth','Fruits','Veggies','Income','Education','Stroke'])
 
     df.columns = df.columns.str.lower()
@@ -225,7 +226,7 @@ def scale_data(train,
     train_scaled = train.copy() #Ah, making a copy of the df and then overwriting the data in .transform() to remove warning message
     validate_scaled = validate.copy()
     test_scaled = test.copy()
-    #Initiate scaler, using Robust Scaler
+    #Initiate scaler, using MinMaxScaler
     scaler = MinMaxScaler()
     #Fit to train only
     scaler.fit(train[cols])
@@ -254,6 +255,9 @@ def mvp_info(train_scaled, validate_scaled, test_scaled,list_of_features, target
 
 
 def get_dummies(X_train, X_validate, X_test,the_columns):
+    '''
+    Creates dummy columns for my catagorical variables 
+    '''
     dummy_train = pd.get_dummies(X_train[the_columns])
     dummy_validate = pd.get_dummies(X_validate[the_columns])
     dummy_test = pd.get_dummies(X_test[the_columns])
@@ -270,6 +274,9 @@ def get_dummies(X_train, X_validate, X_test,the_columns):
 
 
 def get_second_list(df):
+    '''
+    creates lists and a variable to be used in different functions
+    '''
     the_list = list(df.columns)
     second_list = []
     target = the_list.pop(0)
@@ -283,6 +290,9 @@ def get_second_list(df):
 
 
 def calculate_percentage(value1, value2):
+    '''
+    Calculates the percentage of heart problem patients in the their respective catagories
+    '''
     the_df = pd.DataFrame(data=[
     {
         'No heart problems':value1,
@@ -294,13 +304,23 @@ def calculate_percentage(value1, value2):
 
 
 def combine_three_dataframes(df1, df2, df3):
+    '''
+    Combines three dataframes
+    '''
     return pd.concat([df1, df2, df3])
 
 
 def combine_two_dataframes(df1, df2):
+    '''
+    combines two dataframes
+    '''
     return pd.concat([df1, df2])
 
+
 def the_order_list():
+    '''
+    creates an order to age
+    '''
     the_order = ['18 to 24', '25 to 29', '30 to 34','35 to 39', '40 to 44',
             '45 to 49', '50 to 54', '55 to 59', '60 to 64', '65 to 69', 
             '70 to 74', '75 to 79', '80 or older']
@@ -308,6 +328,9 @@ def the_order_list():
 
 
 def comparison_of_means(df, second_list):
+    '''
+    run a t test on items in a list and returns the results in a pandas dataframe
+    '''
     df1 = pd.DataFrame()
     for i in second_list:
         t, p = stats.ttest_ind(df[i][df.heartdiseaseorattack == 1.0],df[i][df.heartdiseaseorattack == 0.0])
@@ -321,33 +344,54 @@ def comparison_of_means(df, second_list):
 
 
 def extra_analysis(df):
-    df1 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 0].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 0].value_counts()[1])
-    df1 = df1.rename(index={0: 'No diabetes'})
-    df2 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 1].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 1].value_counts()[1])
-    df2 = df2.rename(index={0: 'Pre diabetes'})
-    df3 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 2].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 2].value_counts()[1])
-    df3 = df3.rename(index={0: 'Has diabetes'})
-    diabetes_df = combine_three_dataframes(df1, df2, df3)
+    '''
+    creates a pandas dataframe for the extra analysis features and gives a percentage of those who have had 
+    heart problems towards the whole
+    '''
+    label_mapping_1 = {'No High Blood Pressure':0 , 'High Blood Pressure':1}
+    label_mapping_2 = {'Normal Cholesterol':0 ,  'High Cholesterol':1}
+    label_mapping_3 = {'Non-Smoking':0 ,  'Smoking':1}
+    label_mapping_4 = { 'No Diabetes':0,  'Pre-Diabetes':1, 'Diabetes':2}
+    label_mapping_5 = { 'No hvyalcoholconsump':0,  'hvyalcoholconsump':1}
+    
+    df['highbp'] = df['highbp'].map(label_mapping_1)
+    df['highchol'] = df['highchol'].map(label_mapping_2)  
+    df['smoker'] = df['smoker'].map(label_mapping_3)
+    df['diabetes'] = df['diabetes'].map(label_mapping_4)
+    df['hvyalcoholconsump'] = df['hvyalcoholconsump'].map(label_mapping_5)
 
+
+    df1 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 0].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 0].value_counts()[1])
+    df2 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 1].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 1].value_counts()[1])
+    df3 = calculate_percentage(df.heartdiseaseorattack[df.diabetes == 2].value_counts()[0], df.heartdiseaseorattack[df.diabetes == 2].value_counts()[1])
+    diabetes_df = combine_three_dataframes(df1, df2, df3)
+    diabetes_df.reset_index(drop=True, inplace=True)
+    diabetes_df = diabetes_df.rename(index={0: 'No diabetes'})  
+    diabetes_df = diabetes_df.rename(index={1: 'Pre diabetes'})
+    diabetes_df = diabetes_df.rename(index={2: 'Has diabetes'})
 
     df1 = calculate_percentage(df.heartdiseaseorattack[df.hvyalcoholconsump == 0].value_counts()[0], df.heartdiseaseorattack[df.hvyalcoholconsump == 0].value_counts()[1])
-    df1 = df1.rename(index={0: 'Alcohol free'})
     df2 = calculate_percentage(df.heartdiseaseorattack[df.hvyalcoholconsump == 1].value_counts()[0], df.heartdiseaseorattack[df.hvyalcoholconsump == 1].value_counts()[1])
-    df2 = df2.rename(index={0: 'Heavy alcohol'})
     alcohol_df = combine_two_dataframes(df1, df2)
+    alcohol_df.reset_index(drop=True, inplace=True)
+    alcohol_df = alcohol_df.rename(index={0: 'Alcohol free'})
+    alcohol_df = alcohol_df.rename(index={1: 'Heavy alcohol'})
 
     df1 = calculate_percentage(df.heartdiseaseorattack[df.sex == 'male'].value_counts()[0], df.heartdiseaseorattack[df.sex == 'male'].value_counts()[1])
-    df1 = df1.rename(index={0: 'Male'})
     df2 = calculate_percentage(df.heartdiseaseorattack[df.sex == 'female'].value_counts()[0], df.heartdiseaseorattack[df.sex == 'female'].value_counts()[1])
-    df2 = df2.rename(index={0: 'Female'})
     gender_df = combine_two_dataframes(df1, df2)
-
+    gender_df.reset_index(drop=True, inplace=True)
+    gender_df = gender_df.rename(index={1: 'Male'})
+    gender_df = gender_df.rename(index={0: 'Female'})
 
     the_df = combine_three_dataframes(diabetes_df, alcohol_df, gender_df)
     return the_df
 
 
 def load_all_csv():
+    '''
+    loads all model csv's and concatenates the best results together
+    '''
     knn_df = pd.read_csv('KNN.csv', index_col=0)
     LR_df = pd.read_csv('LR.csv',index_col=0)
     RF_df = pd.read_csv('RF.csv',index_col=0)
@@ -361,7 +405,23 @@ def load_all_csv():
     the_df = pd.concat([knn_df.iloc[1:2], LR_df.iloc[1:2], RF_df.iloc[9:10], DT_df.iloc[1:2]])
     return the_df, testRF
 
+
 def multivariate_exploration_charts(df, the_list, second_list):
+    '''
+    creates barplots for all possible combinations of continuous varables with catagorical variables
+    '''
+    label_mapping_1 = {0:'No High Blood Pressure' , 1:'High Blood Pressure'}
+    label_mapping_2 = {0:'Normal Cholesterol' ,  1:'High Cholesterol'}
+    label_mapping_3 = {0:'Non-Smoking' ,  1:'Smoking'}
+    label_mapping_4 = {0:'No Diabetes',  1:'Pre-Diabetes', 2:'Diabetes'}
+    label_mapping_5 = {0:'No hvyalcoholconsump',  1:'hvyalcoholconsump'}
+    
+    df['highbp'] = df['highbp'].map(label_mapping_1)
+    df['highchol'] = df['highchol'].map(label_mapping_2)
+    df['smoker'] = df['smoker'].map(label_mapping_3)
+    df['diabetes'] = df['diabetes'].map(label_mapping_4)
+    df['hvyalcoholconsump'] = df['hvyalcoholconsump'].map(label_mapping_5)
+
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     i = 0
@@ -380,21 +440,21 @@ def multivariate_exploration_charts(df, the_list, second_list):
 
 
 def bivariate_catagorical(df, the_list):
+    '''
+    creates countplots and adds them to a subplot for all of my catagorical variables
+    '''
     label_mapping_1 = {0: 'No High Blood Pressure', 1: 'High Blood Pressure'}
     label_mapping_2 = {0: 'Normal Cholesterol', 1: 'High Cholesterol'}
     label_mapping_3 = {0: 'Non-Smoking', 1: 'Smoking'}
     label_mapping_4 = {0: 'No Diabetes', 1: 'Pre-Diabetes', 2:'Diabetes'}
     label_mapping_5 = {0: 'No hvyalcoholconsump', 1: 'hvyalcoholconsump'}
     
-
-    df['highchol'] = df['highchol'].map(label_mapping_1)
-    df['highbp'] = df['highbp'].map(label_mapping_2)
+    df['highchol'] = df['highchol'].map(label_mapping_2)
+    df['highbp'] = df['highbp'].map(label_mapping_1)
     df['smoker'] = df['smoker'].map(label_mapping_3)
     df['diabetes'] = df['diabetes'].map(label_mapping_4)
     df['hvyalcoholconsump'] = df['hvyalcoholconsump'].map(label_mapping_5)
     
-
-
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     for i, col in enumerate(the_list):
@@ -406,7 +466,11 @@ def bivariate_catagorical(df, the_list):
     plt.subplots_adjust(wspace=0.5, hspace=0.75)
     plt.show()
 
+
 def age_visual(df, the_age):
+    '''
+    creates a barplot for the age catagory
+    '''
     the_order = the_order_list()
     sns.countplot(hue=df['heartdiseaseorattack'], x=df['age'], data=df, order = the_order).set_title(f'{the_age}')
     plt.xticks(rotation=45)
@@ -414,22 +478,37 @@ def age_visual(df, the_age):
 
 
 def bivariate_continuous(df, second_list):
+    '''
+    creates violinplots of all of my continuous variables
+    '''
+    label_mapping_1 = {0: 'No heart problems', 1: 'Heart problems'}
+
+    df['heartdiseaseorattack'] = df['heartdiseaseorattack'].map(label_mapping_1)
+
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     for i, col in enumerate(second_list):
         plt.subplot(4,3,i+1)
         sns.violinplot(x=df['heartdiseaseorattack'], y=df[col], data=df).set_title(f'{col}')
+        
         mean_value = np.mean(df[col][df['heartdiseaseorattack'] == 1])
         mean_value_2 = np.mean(df[col][df['heartdiseaseorattack'] == 0])
         plt.axhline(mean_value, color='red', linestyle='--', label='Mean heart attack')
         plt.axhline(mean_value_2, color='blue', linestyle='--', label='Mean NoN heart attack')
+        plt.xticks(rotation = 10)
         plt.legend()
         
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.show()
+    label_mapping_1 = { 'No heart problems':0,  'Heart problems':1}
+
+    df['heartdiseaseorattack'] = df['heartdiseaseorattack'].map(label_mapping_1)
 
 
 def univariate_visual(df):
+    '''
+    creates histplots for all of my columns
+    '''
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     for i, col in enumerate(df):
@@ -443,6 +522,9 @@ def univariate_visual(df):
 
 
 def condenced_prepate(df):
+    '''
+    runs multiple functions that prepare the data
+    '''
     df = prepare_data(df)
     second_list, the_age, the_list, target = get_second_list(df)
     train, validate, test = split_data(df, 'heartdiseaseorattack')
