@@ -428,13 +428,21 @@ def multivariate_exploration_charts(df, the_list, second_list):
 
     the_list # catagorical
     second_list # continuous
-
-    for col in the_list:
-        for second in second_list: 
-            plt.subplot(7,3,i+1)
-            sns.barplot(data=df, x=col, y=second, hue=df.heartdiseaseorattack).set_title(f'{col}')
-            i +=1
+    charts_list = [['bmi', 'highbp'], ['menthlth','highbp'], ['physhlth', 'highbp'],
+     ['menthlth', 'highchol'], ['physhlth', 'highchol'],
+     ['menthlth','smoker'], ['physhlth', 'smoker'], 
+     ['bmi', 'hvyalcoholconsump'], ['menthlth','hvyalcoholconsump'], ['physhlth','hvyalcoholconsump'],
+     ['menthlth', 'sex'], ['physhlth', 'sex']]
     
+    # for col in the_list:
+    #     for second in second_list: 
+    #         plt.subplot(7,3,i+1)
+    #         sns.barplot(data=df, x=col, y=second, hue=df.heartdiseaseorattack).set_title(f'{col}')
+    #         i +=1
+    for col in charts_list:
+        plt.subplot(7,3,i+1)
+        sns.barplot(data=df, x=df[col[1]], y=df[col[0]], hue=df.heartdiseaseorattack).set_title(f'{col[0]} and {col[1]}')
+        i +=1
     plt.tight_layout()
     plt.show()
 
@@ -481,10 +489,7 @@ def bivariate_continuous(df, second_list):
     '''
     creates violinplots of all of my continuous variables
     '''
-    label_mapping_1 = {0: 'No heart problems', 1: 'Heart problems'}
-
-    df['heartdiseaseorattack'] = df['heartdiseaseorattack'].map(label_mapping_1)
-
+   
     plt.figure(figsize=(14,14))
     plt.xticks(rotation = 45)
     for i, col in enumerate(second_list):
@@ -495,15 +500,12 @@ def bivariate_continuous(df, second_list):
         mean_value_2 = np.mean(df[col][df['heartdiseaseorattack'] == 0])
         plt.axhline(mean_value, color='red', linestyle='--', label='Mean heart attack')
         plt.axhline(mean_value_2, color='blue', linestyle='--', label='Mean NoN heart attack')
-        plt.xticks(rotation = 10)
+        plt.xticks(rotation = 10, ticks = [0, 1], labels=['No heart problems', 'Heart problems'])
         plt.legend()
         
     plt.subplots_adjust(wspace=0.5, hspace=0.5)
     plt.show()
-    label_mapping_1 = { 'No heart problems':0,  'Heart problems':1}
-
-    df['heartdiseaseorattack'] = df['heartdiseaseorattack'].map(label_mapping_1)
-
+   
 
 def univariate_visual(df):
     '''
@@ -530,3 +532,36 @@ def condenced_prepate(df):
     train, validate, test = split_data(df, 'heartdiseaseorattack')
     train_scaled, validate_scaled, test_scaled = scale_data(train, validate, test, cols = second_list)
     return df, second_list, the_age, the_list, target, train, validate, test , train_scaled, validate_scaled, test_scaled
+
+def create_random_forest_two(X_train,y_train, X_validate, y_validate,X_test, y_test):
+    '''
+    gets the weights of the best model
+    '''
+    
+    forest = RandomForestClassifier(random_state = 123,max_depth=9 )
+    forest.fit(X_train, y_train)    
+    train_predict = forest.score(X_train, y_train)
+    validate_predict = forest.score(X_validate, y_validate)
+    the_weights = forest.feature_importances_
+    
+    return forest
+
+
+def getting_weights_max(tree, X_train):
+    columns = X_train.columns
+
+    the_weight = tree.feature_importances_
+    the_weight
+    weights_column = []
+    for i in the_weight:
+        weights_column.append(i)
+        
+    the_dataframe = pd.DataFrame({'columns': columns, 
+                                'the_weight':weights_column})  
+
+    the_dataframe
+    plt.title('Does device_protection affect churn')  
+
+    ax = sns.barplot(x=columns , y=the_weight, data = the_dataframe)
+    ax.tick_params(axis='x', rotation=90)
+    plt.show()
